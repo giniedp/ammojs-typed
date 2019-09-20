@@ -1,8 +1,8 @@
 {
-  "name": "ammojs-types",
+  "name": "ammojs-typed",
   "version": "1.0.0",
-  "description": "Type definition generator for ammo.js",
-  "main": "index.js",
+  "description": "Ammo.js with type definitions",
+  "main": "ammo/ammo.js",
   "scripts": {
     "download:idl": "curl -L https://raw.githubusercontent.com/kripken/ammo.js/master/ammo.idl -o ./ammo/ammo.idl",
     "download:js": "curl -L https://github.com/kripken/ammo.js/raw/master/builds/ammo.js -o ./ammo/ammo.js",
@@ -12,6 +12,11 @@
     "test": "tsc ammo/ammo.d.ts --noEmit"
   },
   "author": "Alexander Gräfenstein",
+  "files": [
+    "ammo",
+    "Readme.md",
+    "package.json"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^12.7.5",

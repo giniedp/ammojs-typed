@@ -1,4 +1,6 @@
+declare function Ammo(): Promise<void>;
 declare module Ammo {
+    function destroy(obj: any): void;
     class btIDebugDraw {
         drawLine(from: btVector3, to: btVector3, color: btVector3): void;
         drawContactPoint(pointOnB: btVector3, normalOnB: btVector3, distance: number, lifeTime: number, color: btVector3): void;
@@ -435,7 +437,7 @@ declare module Ammo {
     }
     class btCollisionConfiguration {
     }
-    class btDbvtBroadphase {
+    class btDbvtBroadphase extends btBroadphaseInterface {
         constructor();
     }
     class btBroadphaseProxy {

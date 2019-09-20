@@ -13,6 +13,16 @@ You can use this repo as an NPM package if you are interested in the lates ammoj
 $ npm install github:giniedp/ammojs-typed
 ```
 
+Then in your typescript
+
+```ts
+import Ammo from 'ammojs-typed'
+
+Ammo().then(() => {
+  // Bullet-interfacing code
+})
+```
+
 # Generate
 
 Clone this repository and install node dependencies

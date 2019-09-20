@@ -1,5 +1,6 @@
-declare function Ammo(): Promise<void>;
-declare module Ammo {
+export default Ammo;
+export declare function Ammo(): Promise<void>;
+export declare module Ammo {
     function destroy(obj: any): void;
     class btIDebugDraw {
         drawLine(from: btVector3, to: btVector3, color: btVector3): void;

@@ -104,8 +104,9 @@ interface btDbvtBroadphase: btBroadphaseInterface {
 Its basically the following wrapper
 
 ```.ts
-declate function Ammo(): Promise<void>
-declare module Ammo {
+export default Ammo;
+export declate function Ammo(): Promise<void>
+export declare module Ammo {
   function destroy(value: any): void;
 
   // ... generated from IDL

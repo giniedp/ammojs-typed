@@ -19,10 +19,11 @@ export function convertIDL(rootTypes: webidl2.IDLRootType[]) {
     }
   }
 
-  // declare function Ammo(): Promise<void>;
+  const ammoDefault = ts.createExportAssignment([], [], false, ts.createIdentifier('Ammo'))
+  // export declare function Ammo(): Promise<void>;
   const ammoPromise = ts.createFunctionDeclaration(
     /* decorators     */[],
-    /* modifiers      */[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+    /* modifiers      */[ts.createModifier(ts.SyntaxKind.ExportKeyword), ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
     /* asteriskToken  */ undefined,
     /* name           */ 'Ammo',
     /* typeParameters */[],
@@ -41,15 +42,18 @@ export function convertIDL(rootTypes: webidl2.IDLRootType[]) {
     /* type           */ ts.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
     /* body           */ undefined
   )
-  // declare module Ammo { ... }
-  const ammo = ts.createModuleDeclaration(
+  // export declare module Ammo { ... }
+  const ammoModule = ts.createModuleDeclaration(
     /* decorators */[],
-    /* modifiers  */[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+    /* modifiers  */[ts.createModifier(ts.SyntaxKind.ExportKeyword), ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
     /* name       */ ts.createIdentifier('Ammo'),
     /* body       */ ts.createModuleBlock([ammoDestroy, ...nodes])
   )
 
-  return [printer.printNode(ts.EmitHint.Unspecified, ammoPromise, file), printer.printNode(ts.EmitHint.Unspecified, ammo, file)].join('\n')
+  return [
+    printer.printNode(ts.EmitHint.Unspecified, ammoDefault, file),
+    printer.printNode(ts.EmitHint.Unspecified, ammoPromise, file),
+    printer.printNode(ts.EmitHint.Unspecified, ammoModule, file)].join('\n')
 }
 
 function convertInterface(idl: webidl2.InterfaceType) {

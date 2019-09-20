@@ -1,4 +1,4 @@
-# Ammo.js Types
+# Ammo.js Typed
 
 This project generates a `.d.ts` file based on a WebIDL input file specificly for the [Ammo.js](https://github.com/kripken/ammo.js) project.
 
@@ -7,8 +7,10 @@ or for a customized ammo.idl file when generating custom ammo.js builds
 
 # Usage
 
+You can use this repo as an NPM package if you are interested in the lates ammojs build with type definitions
+
 ```
-$ npm install github:giniedp/ammo.js-types
+$ npm install github:giniedp/ammojs-typed
 ```
 
 # Generate
@@ -16,19 +18,19 @@ $ npm install github:giniedp/ammo.js-types
 Clone this repository and install node dependencies
 
 ```
-git clone git@github.com:giniedp/ammo.js-types.git
-cd ammo.js-types
+git clone git@github.com:giniedp/ammojs-typed.git
+cd ammojs-typed
 npm install
 ```
 
-Download the latest `ammo.idl` and `ammo.js` from the ammo.js repository
-and place them into the `./ammo` folder.
+Place the `ammo.idl` and `ammo.js` into the `./ammo` folder.
+To download the latest version from the ammo.js repository run
 
 ```
 npm run download
 ```
 
-Make your adjustments to the IDL file if needed and run
+Make your adjustments to the IDL file if needed (see below) and run
 
 ```
 npm run generate
@@ -50,7 +52,7 @@ Verify that the generated file matches the downloaded `ammo.js` build
 npm run test
 ```
 
-# Auto adjustments made to the IDL file
+# Automatic IDL adjustments
 
 The current `ammo.idl` is not compatible with the webidl2 parser out of the box. The following adjustments
 are made automatically when the idl file is parsed
@@ -83,17 +85,21 @@ interface btVector4: btVector3 {
 
 - `attribute float[] m_plane;`
 
-# Manual adjustments may be needed
+# Manual IDL adjustments
 
-The `btVector4` implements the shape of `btVector3` which causes a signature mismatch of the `setValue` method which typescript complains about. You may want to add
+The `btVector4` implements the shape of `btVector3` which causes a signature mismatch of the `setValue` method which typescript complains about. Add the following to the `btVector4`
 
 ```
 void setValue(float x, float y, float z);
 ```
 
-to the `btVector4`
+The `btDbvtBroadphase` should derive from `btBroadphaseInterface`
 
-# Generated Stuff that is not inferred from the IDL file
+```
+interface btDbvtBroadphase: btBroadphaseInterface {
+```
+
+# Generated but not inferred from the IDL
 
 Its basically the following wrapper
 
@@ -108,6 +114,6 @@ declare module Ammo {
 
 # References
 
-- https://github.com/osman-turan/ammo.js-typings
-- https://github.com/microsoft/TSJS-lib-generator
 - https://github.com/kripken/ammo.js/issues/233
+- https://github.com/microsoft/TSJS-lib-generator
+- https://github.com/osman-turan/ammo.js-typings

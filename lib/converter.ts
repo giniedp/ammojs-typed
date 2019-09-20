@@ -2,7 +2,7 @@ import * as webidl2 from 'webidl2'
 import * as ts from 'typescript'
 
 export function convertIDL(rootTypes: webidl2.IDLRootType[]) {
-  const file = ts.createSourceFile('ammo.d.ts', '', ts.ScriptTarget.Latest, /* setParentNodes */ false, ts.ScriptKind.TS)
+  const file = ts.createSourceFile('ammo.d.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS)
 
   const printer = ts.createPrinter({
     newLine: ts.NewLineKind.LineFeed,
@@ -19,13 +19,37 @@ export function convertIDL(rootTypes: webidl2.IDLRootType[]) {
     }
   }
 
-  const ammo = ts.createModuleDeclaration(
-    [],
-    [ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
-    ts.createIdentifier('Ammo'),
-    ts.createModuleBlock(nodes)
+  // declare function Ammo(): Promise<void>;
+  const ammoPromise = ts.createFunctionDeclaration(
+    /* decorators     */[],
+    /* modifiers      */[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+    /* asteriskToken  */ undefined,
+    /* name           */ 'Ammo',
+    /* typeParameters */[],
+    /* parameters     */[],
+    /* type           */ ts.createTypeReferenceNode('Promise', [ts.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword)]),
+    /* body           */ undefined
   )
-  return printer.printNode(ts.EmitHint.Unspecified, ammo, file)
+  // function destroy(obj: any): void;
+  const ammoDestroy = ts.createFunctionDeclaration(
+    /* decorators     */[],
+    /* modifiers      */[],
+    /* asteriskToken  */ undefined,
+    /* name           */ 'destroy',
+    /* typeParameters */[],
+    /* parameters     */[ts.createParameter([], [], undefined, 'obj', undefined, ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword))],
+    /* type           */ ts.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
+    /* body           */ undefined
+  )
+  // declare module Ammo { ... }
+  const ammo = ts.createModuleDeclaration(
+    /* decorators */[],
+    /* modifiers  */[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+    /* name       */ ts.createIdentifier('Ammo'),
+    /* body       */ ts.createModuleBlock([ammoDestroy, ...nodes])
+  )
+
+  return [printer.printNode(ts.EmitHint.Unspecified, ammoPromise, file), printer.printNode(ts.EmitHint.Unspecified, ammo, file)].join('\n')
 }
 
 function convertInterface(idl: webidl2.InterfaceType) {
@@ -113,7 +137,7 @@ function convertType(idl: webidl2.IDLTypeDescription): ts.TypeNode {
     return ts.createArrayTypeNode(subtype)
   }
   if (idl.union) {
-    return ts.createUnionTypeNode((idl.idlType).map(convertType))
+    return ts.createUnionTypeNode(idl.idlType.map(convertType))
   }
   throw new Error('Unsupported IDL type')
 }

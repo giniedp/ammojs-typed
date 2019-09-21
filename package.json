@@ -11,6 +11,11 @@
     "lint": "tsc ammo/ammo.d.ts --noEmit",
     "test": "tsc ammo/ammo.d.ts --noEmit"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/giniedp/ammojs-typed.git"
+  },
+  "homepage": "https://github.com/giniedp/ammojs-typed",
   "author": "Alexander Gräfenstein",
   "files": [
     "ammo",

@@ -1,14 +1,10 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "outDir": "dist",
     "moduleResolution": "node",
-    "pretty": true,
-    "allowSyntheticDefaultImports": true,
+    "target": "es6",
     "newLine": "LF",
     "baseUrl": ".",
-    "lib": ["dom", "es5", "es2015", "es2016", "es2017.object", "es2017.string"],
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["node_modules/@types", "types"]
   },
   "exclude": ["dist", "node_modules"]
 }

@@ -7,23 +7,59 @@ or for a customized ammo.idl file when generating custom ammo.js builds
 
 # Usage
 
-You can use this repo as an NPM package if you are interested in the lates ammojs build with type definitions
+You can use this repo as an NPM package if you are interested in the latest ammojs build with type definitions
 
 ```
 $ npm install github:giniedp/ammojs-typed
 ```
 
-Then in your typescript
+## Use Ammo as window global
+
+Configure your `tsconfig.json` to lookup the types
+
+```json
+  "typeRoots": ["node_modules/ammojs-typed/ammo/ambient"]
+```
+
+Then at some point require ammo.js (depends on your build chain)
+
+```ts
+require('ammojs-typed')
+```
+
+And use the global `Ammo` object
+
+```ts
+Ammo().then(() => {
+  new Ammo.btVector3(1, 2, 3)
+})
+```
+
+## Use Ammo as es6 module
+
+This works but be cautious here. The import gives you the bootstrap function. After bootstrapping
+the api is not available through the `Ammo` symbol by default.
 
 ```ts
 import Ammo from 'ammojs-typed'
 
-Ammo().then(() => {
-  // Bullet-interfacing code
+Ammo().then(api => {
+  const v1 = new api.btVector3(1, 2, 3)
+  const v2 = new Ammo.btVector3(1, 2, 3) // <-- error here
 })
 ```
 
-# Generate
+You can work around that by booting like this
+
+```ts
+import Ammo from 'ammojs-typed'
+
+Ammo(Ammo).then(() => {
+  const v2 = new Ammo.btVector3(1, 2, 3) // <-- works
+})
+```
+
+# Generate .d.ts files
 
 Clone this repository and install node dependencies
 
@@ -46,20 +82,12 @@ Make your adjustments to the IDL file if needed (see below) and run
 npm run generate
 ```
 
-This will parse the `./ammo/ammo.idl` and generate a `./ammo/ammo.d.ts`
+This will parse the `./ammo/ammo.idl` and generate a `./ammo/ammo.d.ts` as well as `./ammo/ambient/ammo.d.ts`
 
-Verify that the generated file has no issues
+Verify that the generated files have no issues
 
 ```
 npm run lint
-```
-
-Verify that the generated file matches the downloaded `ammo.js` build
-
-**this step is not implemented yet**
-
-```
-npm run test
 ```
 
 # Automatic IDL adjustments
@@ -67,8 +95,7 @@ npm run test
 The current `ammo.idl` is not compatible with the webidl2 parser out of the box. The following adjustments
 are made automatically when the idl file is parsed
 
-1. Inheritance
-   Inheritance statements like these
+1. Inheritance statements like these
 
 ```idl
 interface btVector4 {
@@ -114,10 +141,9 @@ interface btDbvtBroadphase: btBroadphaseInterface {
 Its basically the following wrapper
 
 ```.ts
-export default Ammo;
-export declate function Ammo(): Promise<void>
-export declare module Ammo {
-  function destroy(value: any): void;
+declare function Ammo<T>(api?: T): Promise<T & typeof Ammo>;
+declare module Ammo {
+  function destroy(obj: any): void;
 
   // ... generated from IDL
 }
@@ -128,3 +154,4 @@ export declare module Ammo {
 - https://github.com/kripken/ammo.js/issues/233
 - https://github.com/microsoft/TSJS-lib-generator
 - https://github.com/osman-turan/ammo.js-typings
+- https://ts-ast-viewer.com

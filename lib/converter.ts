@@ -1,14 +1,76 @@
 import * as webidl2 from 'webidl2'
 import * as ts from 'typescript'
 
-export function convertIDL(rootTypes: webidl2.IDLRootType[]) {
+export function printAmmoModule(nodes: ts.Statement[]): string {
   const file = ts.createSourceFile('ammo.d.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS)
+  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed, })
 
-  const printer = ts.createPrinter({
-    newLine: ts.NewLineKind.LineFeed,
-  })
+  // export default Ammo;
+  const ammoAlias = ts.createExportAssignment(
+    /* decorators     */[],
+    /* modifiers      */[ts.createModifier(ts.SyntaxKind.DefaultKeyword)],
+    /* isExportEquals */ false,
+    /* expression     */ ts.createIdentifier('Ammo'),
+  )
 
-  const nodes = []
+  // export function Ammo<T>(ns?: T): Promise<T & typeof Ammo>;
+  const ammoExport = ts.createFunctionDeclaration(
+    /* decorators     */[],
+    /* modifiers      */[ts.createModifier(ts.SyntaxKind.ExportKeyword)],
+    /* asteriskToken  */ undefined,
+    /* name           */ 'Ammo',
+    /* typeParameters */[ts.createTypeParameterDeclaration('T')],
+    /* parameters     */[ts.createParameter([], [], undefined, 'api', ts.createToken(ts.SyntaxKind.QuestionToken), ts.createTypeReferenceNode('T', []))],
+    /* type           */ ts.createTypeReferenceNode('Promise', [ts.createIntersectionTypeNode([ts.createTypeReferenceNode('T', []), ts.createTypeQueryNode(ts.createIdentifier('Ammo'))])]),
+    /* body           */ undefined
+  )
+
+  // export declare module Ammo {
+  const ammoModule = ts.createModuleDeclaration(
+    /* decorators */[],
+    /* modifiers  */[ts.createModifier(ts.SyntaxKind.ExportKeyword), ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+    /* name       */ ts.createIdentifier('Ammo'),
+    /* body       */ ts.createModuleBlock(nodes)
+  )
+
+  return [
+    printer.printNode(ts.EmitHint.Unspecified, ammoAlias, file),
+    printer.printNode(ts.EmitHint.Unspecified, ammoExport, file),
+    printer.printNode(ts.EmitHint.Unspecified, ammoModule, file),
+  ].join('\n')
+}
+
+export function printAmmoAmbient(nodes: ts.Statement[]): string {
+  const file = ts.createSourceFile('ammo.d.ts', '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS)
+  const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed, })
+
+  // declare function Ammo<T>(ns?: T): Promise<T & typeof Ammo>;
+  const ammoLoader = ts.createFunctionDeclaration(
+    /* decorators     */[],
+    /* modifiers      */[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+    /* asteriskToken  */ undefined,
+    /* name           */ 'Ammo',
+    /* typeParameters */[ts.createTypeParameterDeclaration('T')],
+    /* parameters     */[ts.createParameter([], [], undefined, 'api', ts.createToken(ts.SyntaxKind.QuestionToken), ts.createTypeReferenceNode('T', []))],
+    /* type           */ ts.createTypeReferenceNode('Promise', [ts.createIntersectionTypeNode([ts.createTypeReferenceNode('T', []), ts.createTypeQueryNode(ts.createIdentifier('Ammo'))])]),
+    /* body           */ undefined
+  )
+  // declare module Ammo { ... }
+  const ammoModule = ts.createModuleDeclaration(
+    /* decorators */[],
+    /* modifiers  */[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+    /* name       */ ts.createIdentifier('Ammo'),
+    /* body       */ ts.createModuleBlock(nodes)
+  )
+
+  return [
+    printer.printNode(ts.EmitHint.Unspecified, ammoLoader, file),
+    printer.printNode(ts.EmitHint.Unspecified, ammoModule, file),
+  ].join('\n')
+}
+
+export function convertIDL(rootTypes: webidl2.IDLRootType[]): ts.Statement[] {
+  const nodes: ts.Statement[] = []
   for (const rootType of rootTypes) {
     if (rootType.type === 'interface') {
       nodes.push(convertInterface(rootType))
@@ -18,19 +80,6 @@ export function convertIDL(rootTypes: webidl2.IDLRootType[]) {
       console.log('unknown IDL type', rootType.type)
     }
   }
-
-  const ammoDefault = ts.createExportAssignment([], [], false, ts.createIdentifier('Ammo'))
-  // export declare function Ammo(): Promise<void>;
-  const ammoPromise = ts.createFunctionDeclaration(
-    /* decorators     */[],
-    /* modifiers      */[ts.createModifier(ts.SyntaxKind.ExportKeyword), ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
-    /* asteriskToken  */ undefined,
-    /* name           */ 'Ammo',
-    /* typeParameters */[],
-    /* parameters     */[],
-    /* type           */ ts.createTypeReferenceNode('Promise', [ts.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword)]),
-    /* body           */ undefined
-  )
   // function destroy(obj: any): void;
   const ammoDestroy = ts.createFunctionDeclaration(
     /* decorators     */[],
@@ -42,18 +91,8 @@ export function convertIDL(rootTypes: webidl2.IDLRootType[]) {
     /* type           */ ts.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
     /* body           */ undefined
   )
-  // export declare module Ammo { ... }
-  const ammoModule = ts.createModuleDeclaration(
-    /* decorators */[],
-    /* modifiers  */[ts.createModifier(ts.SyntaxKind.ExportKeyword), ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
-    /* name       */ ts.createIdentifier('Ammo'),
-    /* body       */ ts.createModuleBlock([ammoDestroy, ...nodes])
-  )
-
-  return [
-    printer.printNode(ts.EmitHint.Unspecified, ammoDefault, file),
-    printer.printNode(ts.EmitHint.Unspecified, ammoPromise, file),
-    printer.printNode(ts.EmitHint.Unspecified, ammoModule, file)].join('\n')
+  nodes.unshift(ammoDestroy)
+  return nodes
 }
 
 function convertInterface(idl: webidl2.InterfaceType) {

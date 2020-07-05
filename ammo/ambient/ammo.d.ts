@@ -307,6 +307,12 @@ declare module Ammo {
     class btConeShape extends btCollisionShape {
         constructor(radius: number, height: number);
     }
+    class btConeShapeX extends btConeShape {
+        constructor(radius: number, height: number);
+    }
+    class btConeShapeZ extends btConeShape {
+        constructor(radius: number, height: number);
+    }
     class btIntArray {
         size(): number;
         at(n: number): number;
@@ -344,12 +350,6 @@ declare module Ammo {
         buildHull(margin: number): boolean;
         numVertices(): number;
         getVertexPointer(): btVector3;
-    }
-    class btConeShapeX extends btConeShape {
-        constructor(radius: number, height: number);
-    }
-    class btConeShapeZ extends btConeShape {
-        constructor(radius: number, height: number);
     }
     class btCompoundShape extends btCollisionShape {
         constructor(enableDynamicAabbTree?: boolean);
@@ -389,6 +389,9 @@ declare module Ammo {
         PHY_UCHAR
     }
     class btConcaveShape extends btCollisionShape {
+    }
+    class btEmptyShape extends btConcaveShape {
+        constructor();
     }
     class btStaticPlaneShape extends btConcaveShape {
         constructor(planeNormal: btVector3, planeConstant: number);
@@ -437,7 +440,7 @@ declare module Ammo {
     }
     class btCollisionConfiguration {
     }
-    class btDbvtBroadphase extends btBroadphaseInterface {
+    class btDbvtBroadphase {
         constructor();
     }
     class btBroadphaseProxy {
@@ -507,6 +510,7 @@ declare module Ammo {
         getGravity(): btVector3;
         setGravity(acceleration: btVector3): void;
         getBroadphaseProxy(): btBroadphaseProxy;
+        clearForces(): void;
     }
     class btConstraintSetting {
         constructor();
@@ -647,10 +651,12 @@ declare module Ammo {
         get_m_numIterations(): number;
         set_m_numIterations(m_numIterations: number): void;
     }
+    type btInternalTickCallback = (world: btDynamicsWorld, timeStep: number) => void;
     class btDynamicsWorld extends btCollisionWorld {
         addAction(action: btActionInterface): void;
         removeAction(action: btActionInterface): void;
         getSolverInfo(): btContactSolverInfo;
+        setInternalTickCallback(cb: btInternalTickCallback, worldUserInfo?: any, isPreTick?: boolean): void;
     }
     class btDiscreteDynamicsWorld extends btDynamicsWorld {
         constructor(dispatcher: btDispatcher, pairCache: btBroadphaseInterface, constraintSolver: btConstraintSolver, collisionConfiguration: btCollisionConfiguration);
@@ -878,6 +884,16 @@ declare module Ammo {
         get_m_gravity(): btVector3;
         set_m_gravity(m_gravity: btVector3): void;
     }
+    class Face {
+        get_m_normal(): btVector3;
+        set_m_normal(m_normal: btVector3): void;
+        get_m_ra(): number;
+        set_m_ra(m_ra: number): void;
+    }
+    class tFaceArray {
+        size(): number;
+        at(n: number): Face;
+    }
     class Node {
         get_m_x(): btVector3;
         set_m_x(m_x: btVector3): void;
@@ -993,6 +1009,8 @@ declare module Ammo {
         set_m_cfg(m_cfg: Config): void;
         get_m_nodes(): tNodeArray;
         set_m_nodes(m_nodes: tNodeArray): void;
+        get_m_faces(): tFaceArray;
+        set_m_faces(m_faces: tFaceArray): void;
         get_m_materials(): tMaterialArray;
         set_m_materials(m_materials: tMaterialArray): void;
         get_m_anchors(): tAnchorArray;

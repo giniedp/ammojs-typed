@@ -121,6 +121,7 @@ interface btVector4: btVector3 {
 3. sequence types are not allowed for attribute fields. The following lines are currently ignored
 
 - `attribute float[] m_plane;`
+- `attribute Node[] m_n;`
 
 # Manual IDL adjustments
 

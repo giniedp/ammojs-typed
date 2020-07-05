@@ -49,6 +49,10 @@ export function parseIDL(path: string) {
       console.warn('ignored line:', line)
       return `// ${line}`
     })
+    .replace(/attribute Node\[\].*;/gi, line => {
+      console.warn('ignored line:', line)
+      return `// ${line}`
+    })
     .replace(/float\[\]/gi, 'sequence<float>')
     .replace(/long\[\]/gi, 'sequence<long>')
 

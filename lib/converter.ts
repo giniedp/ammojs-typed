@@ -76,6 +76,8 @@ export function convertIDL(rootTypes: webidl2.IDLRootType[]): ts.Statement[] {
       nodes.push(convertInterface(rootType))
     } else if (rootType.type === 'enum') {
       nodes.push(convertEnum(rootType))
+    } else if (rootType.type === 'callback') {
+      nodes.push(convertCallback(rootType))
     } else {
       console.log('unknown IDL type', rootType.type)
     }
@@ -188,4 +190,18 @@ function convertType(idl: webidl2.IDLTypeDescription): ts.TypeNode {
 function convertEnum(idl: webidl2.EnumType) {
   const members = idl.values.map(it => ts.createEnumMember(it.value, null))
   return ts.createEnumDeclaration([], [], idl.name, members)
+}
+
+function convertCallback(idl: webidl2.CallbackType) {
+  return ts.createTypeAliasDeclaration(
+    undefined,
+    undefined,
+    ts.createIdentifier(idl.name),
+    undefined,
+    ts.createFunctionTypeNode(
+      undefined,
+      idl.arguments.map(convertArgument),
+      convertType(idl.idlType),
+    )
+  )
 }

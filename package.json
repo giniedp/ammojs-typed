@@ -1,6 +1,6 @@
 {
   "name": "ammojs-typed",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Ammo.js with type definitions",
   "main": "ammo/ammo.js",
   "types": "ammo/ammo.d.ts",
@@ -27,8 +27,8 @@
   "devDependencies": {
     "@types/node": "^12.7.5",
     "@types/webidl2": "^23.8.0",
-    "ts-node": "^8.4.1",
-    "typescript": "^3.6.3",
-    "webidl2": "^23.8.2"
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.6",
+    "webidl2": "^23.12.1"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "ammojs-typed",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Ammo.js with type definitions",
   "main": "ammo/ammo.js",
   "types": "ammo/ammo.d.ts",

@@ -521,7 +521,7 @@ interface btBroadphaseInterface {
 interface btCollisionConfiguration {
 };
 
-interface btDbvtBroadphase {
+interface btDbvtBroadphase: btBroadphaseInterface {
   void btDbvtBroadphase();
 };
 

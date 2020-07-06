@@ -441,7 +441,7 @@ export declare module Ammo {
     }
     class btCollisionConfiguration {
     }
-    class btDbvtBroadphase {
+    class btDbvtBroadphase extends btBroadphaseInterface {
         constructor();
     }
     class btBroadphaseProxy {

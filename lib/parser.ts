@@ -56,5 +56,5 @@ export function parseIDL(path: string) {
     .replace(/float\[\]/gi, 'sequence<float>')
     .replace(/long\[\]/gi, 'sequence<long>')
 
-  return webidl2.parse(idlString)
+    return webidl2.parse(idlString)
 }

@@ -753,9 +753,10 @@ webidl2@^23.12.1:
   resolved "https://registry.yarnpkg.com/webidl2/-/webidl2-23.12.1.tgz#02efddec292db1950a0d98c96f89d3ede3b6ce9b"
   integrity sha512-CbBwugDZl4vO2hH6oY5ZxCZM+6OB3+k8tXzkKTk1y1w4eLExHKMXS/mtIMFBj2vA7JanD8toNcDCp4EH7J3gLg==
 
-"webidl2ts@github:giniedp/webidl2ts":
+webidl2ts@^1.0.0:
   version "1.0.0"
-  resolved "https://codeload.github.com/giniedp/webidl2ts/tar.gz/17f0c926037a0242db7680c234916d6f62279bc7"
+  resolved "https://registry.yarnpkg.com/webidl2ts/-/webidl2ts-1.0.0.tgz#15d03a3094d7c2727cb15439c2cb5e60e7e3b361"
+  integrity sha512-EHuYB1PjLSWi39haex/NVAt7QhUe9mktWleQ+t14tYhladueBHSNKnwMWw1b8BjwIA6ZUPIowR7BGyWpJ0A2ag==
   dependencies:
     jsdom "^16.3.0"
     typescript "^3.9.6"

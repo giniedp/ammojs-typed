@@ -25,6 +25,6 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "webidl2ts": "github:giniedp/webidl2ts"
+    "webidl2ts": "^1.0.0"
   }
 }

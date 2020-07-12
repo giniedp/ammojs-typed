@@ -1,21 +1,25 @@
 # Ammo.js Typed
 
-This project generates a `.d.ts` file based on a WebIDL input file specificly for the [Ammo.js](https://github.com/kripken/ammo.js) project.
+This project provides the [Ammo.js](https://github.com/kripken/ammo.js) modules with typescript definitions.
 
-The goal is to be able to generate typescript definitions from the latest version of ammo.js
-or for a customized ammo.idl file when generating custom ammo.js builds
+# Installation
 
-# Usage
+Use npm or yarn to install this version of ammojs from npm
 
-You can use this repo as an NPM package if you are interested in the latest ammojs build with type definitions
+```
+$ npm install ammojs-typed
+```
+
+or from github
 
 ```
 $ npm install github:giniedp/ammojs-typed
 ```
 
-## Use Ammo as window global
+# Usage
+## Ammo as window global
 
-Configure your `tsconfig.json` to lookup the types
+Configure your `tsconfig.json` to lookup the ambient types
 
 ```json
   "typeRoots": ["node_modules/ammojs-typed/ammo/ambient"]
@@ -27,6 +31,12 @@ Then at some point require ammo.js (depends on your build chain)
 require('ammojs-typed')
 ```
 
+or reference the script
+
+```html
+<script src="./ammo.js">
+```
+
 And use the global `Ammo` object
 
 ```ts
@@ -35,28 +45,63 @@ Ammo().then(() => {
 })
 ```
 
-## Use Ammo as es6 module
+## Ammo as es6 module import
 
-This works but be cautious here. The import gives you the bootstrap function. After bootstrapping
-the api is not available through the `Ammo` symbol by default.
+You probably need to set the following `compilerOptions` in `tsconfig.json`
+
+```json
+  "allowSyntheticDefaultImports": true,
+  "esModuleInterop": true
+```
+
+Then import ammo like this
 
 ```ts
 import Ammo from 'ammojs-typed'
+```
 
+This works but be cautious here. The default import gives you the bootstrap function.
+After bootstrapping the api is not available through the `Ammo` symbol by default.
+
+```ts
 Ammo().then(api => {
   const v1 = new api.btVector3(1, 2, 3)
-  const v2 = new Ammo.btVector3(1, 2, 3) // <-- error here
+  const v2 = new Ammo.btVector3(1, 2, 3) // <-- runtime error here
 })
 ```
 
 You can work around that by booting like this
 
 ```ts
-import Ammo from 'ammojs-typed'
-
 Ammo(Ammo).then(() => {
   const v2 = new Ammo.btVector3(1, 2, 3) // <-- works
 })
+```
+
+## Ammo as dynamic import
+
+Enable same `compilerOptions` as above
+
+```ts
+import('./ammo.js')                        // use dynamic import
+  .then((Module) => Module.default())      // bootstrap ammo.js
+  .then((ammo) => {
+    const v1 = new ammo.btVector3(1, 2, 3) // use ammo here
+  })
+```
+
+Since typescript 3.8 you can use [type only imports](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-exports). So with dynamic imports you can safely import ammo.js types, without including them in you bundle like this
+
+```ts
+import type Ammo from './ammo.js'
+
+import('./ammo.js')                        // use dynamic import
+  .then((Module) => Module.default())      // bootstrap ammo.js
+  .then((ammo) => {
+    let v1: Ammo.btVector3 = null
+    // ...
+    v1 = v
+  })
 ```
 
 # Generate .d.ts files
@@ -73,55 +118,16 @@ Place the `ammo.idl` and `ammo.js` into the `./ammo` folder.
 To download the latest version from the ammo.js repository run
 
 ```
-npm run download
+$ npm run download
 ```
 
 Make your adjustments to the IDL file if needed (see below) and run
 
 ```
-npm run generate
+$ npm run generate
 ```
 
 This will parse the `./ammo/ammo.idl` and generate a `./ammo/ammo.d.ts` as well as `./ammo/ambient/ammo.d.ts`
-
-Verify that the generated files have no issues
-
-```
-npm run lint
-```
-
-# Automatic IDL adjustments
-
-The current `ammo.idl` is not compatible with the webidl2 parser out of the box. The following adjustments
-are made automatically when the idl file is parsed
-
-1. Inheritance statements like these
-
-```idl
-interface btVector4 {
-
-};
-btVector4 implements btVector3;
-```
-
-are transformed to
-
-```idl
-interface btVector4: btVector3 {
-
-};
-
-```
-
-2. Array types like `float[]` are replaced with a sequence type
-
-- `float[]` -> `sequence<float>`
-- `long[]` -> `sequence<long>`
-
-3. sequence types are not allowed for attribute fields. The following lines are currently ignored
-
-- `attribute float[] m_plane;`
-- `attribute Node[] m_n;`
 
 # Manual IDL adjustments
 
@@ -135,19 +141,6 @@ The `btDbvtBroadphase` should derive from `btBroadphaseInterface`
 
 ```
 interface btDbvtBroadphase: btBroadphaseInterface {
-```
-
-# Generated but not inferred from the IDL
-
-Its basically the following wrapper
-
-```.ts
-declare function Ammo<T>(api?: T): Promise<T & typeof Ammo>;
-declare module Ammo {
-  function destroy(obj: any): void;
-
-  // ... generated from IDL
-}
 ```
 
 # References

@@ -133,14 +133,15 @@ This will parse the `./ammo/ammo.idl` and generate a `./ammo/ammo.d.ts` as well 
 
 The `btVector4` implements the shape of `btVector3` which causes a signature mismatch of the `setValue` method which typescript complains about. Add the following to the `btVector4`
 
-```
-void setValue(float x, float y, float z);
+```diff
++void setValue(float x, float y, float z);
 ```
 
 The `btDbvtBroadphase` should derive from `btBroadphaseInterface`
 
-```
-interface btDbvtBroadphase: btBroadphaseInterface {
+```diff
+-interface btDbvtBroadphase {
++interface btDbvtBroadphase: btBroadphaseInterface {
 ```
 
 # References

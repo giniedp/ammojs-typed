@@ -1,6 +1,6 @@
 export default Ammo;
-export function Ammo<T>(api?: T): Promise<T & typeof Ammo>;
-export declare module Ammo {
+declare function Ammo<T>(target?: T): Promise<T & typeof Ammo>;
+declare module Ammo {
     function destroy(obj: any): void;
     class btIDebugDraw {
         drawLine(from: btVector3, to: btVector3, color: btVector3): void;
@@ -90,7 +90,7 @@ export declare module Ammo {
         getOrigin(): btVector3;
         getRotation(): btQuaternion;
         getBasis(): btMatrix3x3;
-        setFromOpenGLMatrix(m: number[]): void;
+        setFromOpenGLMatrix(m: ReadonlyArray<number>): void;
         inverse(): btTransform;
         op_mul(t: btTransform): btTransform;
     }
@@ -129,8 +129,8 @@ export declare module Ammo {
         setCcdSweptSphereRadius(radius: number): void;
         getUserIndex(): number;
         setUserIndex(index: number): void;
-        getUserPointer(): any;
-        setUserPointer(userPointer: any): void;
+        getUserPointer(): unknown;
+        setUserPointer(userPointer: unknown): void;
         getBroadphaseHandle(): btBroadphaseProxy;
     }
     class btCollisionObjectWrapper {
@@ -303,7 +303,7 @@ export declare module Ammo {
         getMargin(): number;
     }
     class btMultiSphereShape extends btCollisionShape {
-        constructor(positions: btVector3, radii: number[], numPoints: number);
+        constructor(positions: btVector3, radii: ReadonlyArray<number>, numPoints: number);
     }
     class btConeShape extends btCollisionShape {
         constructor(radius: number, height: number);
@@ -321,6 +321,8 @@ export declare module Ammo {
     class btFace {
         get_m_indices(): btIntArray;
         set_m_indices(m_indices: btIntArray): void;
+        get_m_plane(): ReadonlyArray<number>;
+        set_m_plane(m_plane: ReadonlyArray<number>): void;
     }
     class btVector3Array {
         size(): number;
@@ -337,7 +339,7 @@ export declare module Ammo {
         set_m_faces(m_faces: btFaceArray): void;
     }
     class btConvexHullShape extends btCollisionShape {
-        constructor(points?: number[], numPoints?: number);
+        constructor(points?: ReadonlyArray<number>, numPoints?: number);
         addPoint(point: btVector3, recalculateLocalAABB?: boolean): void;
         setMargin(margin: number): void;
         getMargin(): number;
@@ -403,7 +405,7 @@ export declare module Ammo {
         constructor(meshInterface: btStridingMeshInterface, useQuantizedAabbCompression: boolean, buildBvh?: boolean);
     }
     class btHeightfieldTerrainShape extends btConcaveShape {
-        constructor(heightStickWidth: number, heightStickLength: number, heightfieldData: any, heightScale: number, minHeight: number, maxHeight: number, upAxis: number, hdt: PHY_ScalarType, flipQuadEdges: boolean);
+        constructor(heightStickWidth: number, heightStickLength: number, heightfieldData: unknown, heightScale: number, minHeight: number, maxHeight: number, upAxis: number, hdt: PHY_ScalarType, flipQuadEdges: boolean);
         setMargin(margin: number): void;
         getMargin(): number;
     }
@@ -657,7 +659,7 @@ export declare module Ammo {
         addAction(action: btActionInterface): void;
         removeAction(action: btActionInterface): void;
         getSolverInfo(): btContactSolverInfo;
-        setInternalTickCallback(cb: btInternalTickCallback, worldUserInfo?: any, isPreTick?: boolean): void;
+        setInternalTickCallback(cb: btInternalTickCallback, worldUserInfo?: unknown, isPreTick?: boolean): void;
     }
     class btDiscreteDynamicsWorld extends btDynamicsWorld {
         constructor(dispatcher: btDispatcher, pairCache: btBroadphaseInterface, constraintSolver: btConstraintSolver, collisionConfiguration: btCollisionConfiguration);
@@ -886,6 +888,8 @@ export declare module Ammo {
         set_m_gravity(m_gravity: btVector3): void;
     }
     class Face {
+        get_m_n(): ReadonlyArray<Node>;
+        set_m_n(m_n: ReadonlyArray<Node>): void;
         get_m_normal(): btVector3;
         set_m_normal(m_normal: btVector3): void;
         get_m_ra(): number;
@@ -1005,7 +1009,7 @@ export declare module Ammo {
         set_collisions(collisions: number): void;
     }
     class btSoftBody extends btCollisionObject {
-        constructor(worldInfo: btSoftBodyWorldInfo, node_count: number, x: btVector3, m: number[]);
+        constructor(worldInfo: btSoftBodyWorldInfo, node_count: number, x: btVector3, m: ReadonlyArray<number>);
         get_m_cfg(): Config;
         set_m_cfg(m_cfg: Config): void;
         get_m_nodes(): tNodeArray;
@@ -1062,9 +1066,9 @@ export declare module Ammo {
         constructor();
         CreateRope(worldInfo: btSoftBodyWorldInfo, from: btVector3, to: btVector3, res: number, fixeds: number): btSoftBody;
         CreatePatch(worldInfo: btSoftBodyWorldInfo, corner00: btVector3, corner10: btVector3, corner01: btVector3, corner11: btVector3, resx: number, resy: number, fixeds: number, gendiags: boolean): btSoftBody;
-        CreatePatchUV(worldInfo: btSoftBodyWorldInfo, corner00: btVector3, corner10: btVector3, corner01: btVector3, corner11: btVector3, resx: number, resy: number, fixeds: number, gendiags: boolean, tex_coords: number[]): btSoftBody;
+        CreatePatchUV(worldInfo: btSoftBodyWorldInfo, corner00: btVector3, corner10: btVector3, corner01: btVector3, corner11: btVector3, resx: number, resy: number, fixeds: number, gendiags: boolean, tex_coords: ReadonlyArray<number>): btSoftBody;
         CreateEllipsoid(worldInfo: btSoftBodyWorldInfo, center: btVector3, radius: btVector3, res: number): btSoftBody;
-        CreateFromTriMesh(worldInfo: btSoftBodyWorldInfo, vertices: number[], triangles: number[], ntriangles: number, randomizeConstraints: boolean): btSoftBody;
+        CreateFromTriMesh(worldInfo: btSoftBodyWorldInfo, vertices: ReadonlyArray<number>, triangles: ReadonlyArray<number>, ntriangles: number, randomizeConstraints: boolean): btSoftBody;
         CreateFromConvexHull(worldInfo: btSoftBodyWorldInfo, vertices: btVector3, nvertices: number, randomizeConstraints: boolean): btSoftBody;
     }
 }

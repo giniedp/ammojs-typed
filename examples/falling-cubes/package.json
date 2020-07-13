@@ -1,0 +1,25 @@
+{
+  "name": "typescript",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "start": "yarn build && open index.html"
+  },
+  "dependencies": {
+    "@gglib/gglib": "^0.6.0",
+    "@gglib/graphics": "^0.6.0",
+    "@gglib/math": "^0.6.0",
+    "@gglib/utils": "^0.6.0",
+    "ammojs-typed": "file:../../"
+  },
+  "devDependencies": {
+    "rollup": "^2.21.0",
+    "rollup-plugin-auto-external": "^2.0.0",
+    "rollup-plugin-copy": "^3.3.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-sourcemaps": "^0.6.2",
+    "rollup-plugin-typescript2": "^0.27.1",
+    "typescript": "^3.9.6"
+  }
+}

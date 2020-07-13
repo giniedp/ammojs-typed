@@ -1,6 +1,16 @@
 declare function Ammo<T>(target?: T): Promise<T & typeof Ammo>;
 declare module Ammo {
     function destroy(obj: any): void;
+    function _malloc(size: number): number;
+    function _free(ptr: number): void;
+    const HEAP8: Int8Array;
+    const HEAP16: Int16Array;
+    const HEAP32: Int32Array;
+    const HEAPU8: Uint8Array;
+    const HEAPU16: Uint16Array;
+    const HEAPU32: Uint32Array;
+    const HEAPF32: Float32Array;
+    const HEAPF64: Float64Array;
     class btIDebugDraw {
         drawLine(from: btVector3, to: btVector3, color: btVector3): void;
         drawContactPoint(pointOnB: btVector3, normalOnB: btVector3, distance: number, lifeTime: number, color: btVector3): void;
@@ -382,14 +392,7 @@ declare module Ammo {
         addIndex(index: number): void;
         getIndexedMeshArray(): btIndexedMeshArray;
     }
-    enum PHY_ScalarType {
-        PHY_FLOAT,
-        PHY_DOUBLE,
-        PHY_INTEGER,
-        PHY_SHORT,
-        PHY_FIXEDPOINT88,
-        PHY_UCHAR
-    }
+    type PHY_ScalarType = "PHY_FLOAT" | "PHY_DOUBLE" | "PHY_INTEGER" | "PHY_SHORT" | "PHY_FIXEDPOINT88" | "PHY_UCHAR";
     class btConcaveShape extends btCollisionShape {
     }
     class btEmptyShape extends btConcaveShape {
@@ -530,12 +533,7 @@ declare module Ammo {
         getParam(num: number, axis: number): number;
         setParam(num: number, value: number, axis: number): void;
     }
-    enum btConstraintParams {
-        BT_CONSTRAINT_ERP,
-        BT_CONSTRAINT_STOP_ERP,
-        BT_CONSTRAINT_CFM,
-        BT_CONSTRAINT_STOP_CFM
-    }
+    type btConstraintParams = "BT_CONSTRAINT_ERP" | "BT_CONSTRAINT_STOP_ERP" | "BT_CONSTRAINT_CFM" | "BT_CONSTRAINT_STOP_CFM";
     class btPoint2PointConstraint extends btTypedConstraint {
         constructor(rbA: btRigidBody, rbB: btRigidBody, pivotInA: btVector3, pivotInB: btVector3);
         constructor(rbA: btRigidBody, pivotInA: btVector3);

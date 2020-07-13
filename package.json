@@ -1,6 +1,6 @@
 {
   "name": "ammojs-typed",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Ammo.js with type definitions",
   "main": "ammo/ammo.js",
   "types": "ammo/ammo.d.ts",
@@ -25,6 +25,6 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "webidl2ts": "^1.0.0"
+    "webidl2ts": "^1.0.1"
   }
 }

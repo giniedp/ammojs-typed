@@ -753,10 +753,10 @@ webidl2@^23.12.1:
   resolved "https://registry.yarnpkg.com/webidl2/-/webidl2-23.12.1.tgz#02efddec292db1950a0d98c96f89d3ede3b6ce9b"
   integrity sha512-CbBwugDZl4vO2hH6oY5ZxCZM+6OB3+k8tXzkKTk1y1w4eLExHKMXS/mtIMFBj2vA7JanD8toNcDCp4EH7J3gLg==
 
-webidl2ts@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/webidl2ts/-/webidl2ts-1.0.0.tgz#15d03a3094d7c2727cb15439c2cb5e60e7e3b361"
-  integrity sha512-EHuYB1PjLSWi39haex/NVAt7QhUe9mktWleQ+t14tYhladueBHSNKnwMWw1b8BjwIA6ZUPIowR7BGyWpJ0A2ag==
+webidl2ts@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/webidl2ts/-/webidl2ts-1.0.1.tgz#f9260bc5874bebf26890da8afe364f3187bfc1ad"
+  integrity sha512-x9IFxdD6Uk5UFBzW0lDxvTR669z3pEdY0kDS9TpKX79836PR2YktWpji3Bkhqe8q2ghlFAisueQ3ttrbWPQiyA==
   dependencies:
     jsdom "^16.3.0"
     typescript "^3.9.6"

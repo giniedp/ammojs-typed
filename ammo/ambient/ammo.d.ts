@@ -40,7 +40,6 @@ declare module Ammo {
         constructor();
         constructor(x: number, y: number, z: number, w: number);
         w(): number;
-        setValue(x: number, y: number, z: number): void;
         setValue(x: number, y: number, z: number, w: number): void;
     }
     class btQuadWord {
@@ -97,6 +96,11 @@ declare module Ammo {
         getWorldTransform(worldTrans: btTransform): void;
         setWorldTransform(worldTrans: btTransform): void;
     }
+    class MotionState {
+        constructor();
+        getWorldTransform(worldTrans: btTransform): void;
+        setWorldTransform(worldTrans: btTransform): void;
+    }
     class btDefaultMotionState extends btMotionState {
         constructor(startTrans?: btTransform, centerOfMassOffset?: btTransform);
         get_m_graphicsWorldTrans(): btTransform;
@@ -147,6 +151,8 @@ declare module Ammo {
         set_m_closestHitFraction(m_closestHitFraction: number): void;
         get_m_collisionObject(): btCollisionObject;
         set_m_collisionObject(m_collisionObject: btCollisionObject): void;
+        get_m_flags(): number;
+        set_m_flags(m_flags: number): void;
     }
     class ClosestRayResultCallback extends RayResultCallback {
         constructor(from: btVector3, to: btVector3);
@@ -237,6 +243,8 @@ declare module Ammo {
     }
     class ClosestConvexResultCallback extends ConvexResultCallback {
         constructor(convexFromWorld: btVector3, convexToWorld: btVector3);
+        get_m_hitCollisionObject(): btCollisionObject;
+        set_m_hitCollisionObject(m_hitCollisionObject: btCollisionObject): void;
         get_m_convexFromWorld(): btVector3;
         set_m_convexFromWorld(m_convexFromWorld: btVector3): void;
         get_m_convexToWorld(): btVector3;
@@ -408,6 +416,135 @@ declare module Ammo {
         setMargin(margin: number): void;
         getMargin(): number;
     }
+    class btAABB {
+        constructor(V1: btVector3, V2: btVector3, V3: btVector3, margin: number);
+        invalidate(): void;
+        increment_margin(margin: number): void;
+        copy_with_margin(other: btAABB, margin: number): void;
+    }
+    class btPrimitiveTriangle {
+        constructor();
+    }
+    class btTriangleShapeEx {
+        constructor(p1: btVector3, p2: btVector3, p3: btVector3);
+        getAabb(t: btTransform, aabbMin: btVector3, aabbMax: btVector3): void;
+        applyTransform(t: btTransform): void;
+        buildTriPlane(plane: btVector4): void;
+    }
+    class btPrimitiveManagerBase {
+        is_trimesh(): boolean;
+        get_primitive_count(): number;
+        get_primitive_box(prim_index: number, primbox: btAABB): void;
+        get_primitive_triangle(prim_index: number, triangle: btPrimitiveTriangle): void;
+    }
+    enum eGIMPACT_SHAPE_TYPE {
+        CONST_GIMPACT_COMPOUND_SHAPE,
+        CONST_GIMPACT_TRIMESH_SHAPE_PART,
+        CONST_GIMPACT_TRIMESH_SHAPE
+    }
+    class btTetrahedronShapeEx {
+        constructor();
+        setVertices(v0: btVector3, v1: btVector3, v2: btVector3, v3: btVector3): void;
+    }
+    class btGImpactShapeInterface extends btConcaveShape {
+        updateBound(): void;
+        postUpdate(): void;
+        getShapeType(): number;
+        getName(): string;
+        getGImpactShapeType(): eGIMPACT_SHAPE_TYPE;
+        getPrimitiveManager(): btPrimitiveManagerBase;
+        getNumChildShapes(): number;
+        childrenHasTransform(): boolean;
+        needsRetrieveTriangles(): boolean;
+        needsRetrieveTetrahedrons(): boolean;
+        getBulletTriangle(prim_index: number, triangle: btTriangleShapeEx): void;
+        getBulletTetrahedron(prim_index: number, tetrahedron: btTetrahedronShapeEx): void;
+        getChildShape(index: number): btCollisionShape;
+        getChildTransform(index: number): btTransform;
+        setChildTransform(index: number, transform: btTransform): void;
+    }
+    class CompoundPrimitiveManager extends btPrimitiveManagerBase {
+        get_m_compoundShape(): btGImpactCompoundShape;
+        set_m_compoundShape(m_compoundShape: btGImpactCompoundShape): void;
+        get_primitive_count(): number;
+        get_primitive_box(prim_index: number, primbox: btAABB): void;
+        get_primitive_triangle(prim_index: number, triangle: btPrimitiveTriangle): void;
+    }
+    class btGImpactCompoundShape extends btGImpactShapeInterface {
+        constructor(children_has_transform?: boolean);
+        childrenHasTransform(): boolean;
+        getPrimitiveManager(): btPrimitiveManagerBase;
+        getCompoundPrimitiveManager(): CompoundPrimitiveManager;
+        getNumChildShapes(): number;
+        addChildShape(localTransform: btTransform, shape: btCollisionShape): void;
+        getChildShape(index: number): btCollisionShape;
+        getChildAabb(child_index: number, t: btTransform, aabbMin: btVector3, aabbMax: btVector3): void;
+        getChildTransform(index: number): btTransform;
+        setChildTransform(index: number, transform: btTransform): void;
+        calculateLocalInertia(mass: number, inertia: btVector3): void;
+        getName(): string;
+        getGImpactShapeType(): eGIMPACT_SHAPE_TYPE;
+    }
+    class TrimeshPrimitiveManager extends btPrimitiveManagerBase {
+        get_m_margin(): number;
+        set_m_margin(m_margin: number): void;
+        get_m_meshInterface(): btStridingMeshInterface;
+        set_m_meshInterface(m_meshInterface: btStridingMeshInterface): void;
+        get_m_part(): number;
+        set_m_part(m_part: number): void;
+        get_m_lock_count(): number;
+        set_m_lock_count(m_lock_count: number): void;
+        get_numverts(): number;
+        set_numverts(numverts: number): void;
+        get_type(): PHY_ScalarType;
+        set_type(type: PHY_ScalarType): void;
+        get_stride(): number;
+        set_stride(stride: number): void;
+        get_indexstride(): number;
+        set_indexstride(indexstride: number): void;
+        get_numfaces(): number;
+        set_numfaces(numfaces: number): void;
+        get_indicestype(): PHY_ScalarType;
+        set_indicestype(indicestype: PHY_ScalarType): void;
+        constructor(manager?: TrimeshPrimitiveManager);
+        lock(): void;
+        unlock(): void;
+        is_trimesh(): boolean;
+        get_vertex_count(): number;
+        get_indices(face_index: number, i0: number, i1: number, i2: number): void;
+        get_vertex(vertex_index: number, vertex: btVector3): void;
+        get_bullet_triangle(prim_index: number, triangle: btTriangleShapeEx): void;
+    }
+    class btGImpactMeshShapePart extends btGImpactShapeInterface {
+        constructor(meshInterface: btStridingMeshInterface, part: number);
+        getTrimeshPrimitiveManager(): TrimeshPrimitiveManager;
+        getVertexCount(): number;
+        getVertex(vertex_index: number, vertex: btVector3): void;
+        getPart(): number;
+    }
+    class btGImpactMeshShape extends btGImpactShapeInterface {
+        constructor(meshInterface: btStridingMeshInterface);
+        getMeshInterface(): btStridingMeshInterface;
+        getMeshPartCount(): number;
+        getMeshPart(index: number): btGImpactMeshShapePart;
+        calculateSerializeBufferSize(): number;
+    }
+    class btCollisionAlgorithmConstructionInfo {
+        constructor();
+        constructor(dispatcher: btDispatcher, temp: number);
+        get_m_dispatcher1(): btDispatcher;
+        set_m_dispatcher1(m_dispatcher1: btDispatcher): void;
+        get_m_manifold(): btPersistentManifold;
+        set_m_manifold(m_manifold: btPersistentManifold): void;
+    }
+    class btCollisionAlgorithm {
+    }
+    class btActivatingCollisionAlgorithm extends btCollisionAlgorithm {
+    }
+    class btGImpactCollisionAlgorithm extends btActivatingCollisionAlgorithm {
+        constructor(ci: btCollisionAlgorithmConstructionInfo, body0Wrap: btCollisionObjectWrapper, body1Wrap: btCollisionObjectWrapper);
+        registerAlgorithm(dispatcher: btCollisionDispatcher): void;
+    }
     class btDefaultCollisionConstructionInfo {
         constructor();
     }
@@ -442,7 +579,7 @@ declare module Ammo {
     }
     class btCollisionConfiguration {
     }
-    class btDbvtBroadphase extends btBroadphaseInterface {
+    class btDbvtBroadphase {
         constructor();
     }
     class btBroadphaseProxy {
@@ -513,6 +650,8 @@ declare module Ammo {
         setGravity(acceleration: btVector3): void;
         getBroadphaseProxy(): btBroadphaseProxy;
         clearForces(): void;
+        setFlags(flags: number): void;
+        getFlags(): number;
     }
     class btConstraintSetting {
         constructor();
@@ -584,6 +723,7 @@ declare module Ammo {
         constructor(rbA: btRigidBody, rbB: btRigidBody, pivotInA: btVector3, pivotInB: btVector3, axisInA: btVector3, axisInB: btVector3, useReferenceFrameA?: boolean);
         constructor(rbA: btRigidBody, rbB: btRigidBody, rbAFrame: btTransform, rbBFrame: btTransform, useReferenceFrameA?: boolean);
         constructor(rbA: btRigidBody, rbAFrame: btTransform, useReferenceFrameA?: boolean);
+        getHingeAngle(): number;
         setLimit(low: number, high: number, softness: number, biasFactor: number, relaxationFactor?: number): void;
         enableAngularMotor(enableMotor: boolean, targetVelocity: number, maxMotorImpulse: number): void;
         setAngularOnly(angularOnly: boolean): void;
@@ -594,10 +734,15 @@ declare module Ammo {
     class btSliderConstraint extends btTypedConstraint {
         constructor(rbA: btRigidBody, rbB: btRigidBody, frameInA: btTransform, frameInB: btTransform, useLinearReferenceFrameA: boolean);
         constructor(rbB: btRigidBody, frameInB: btTransform, useLinearReferenceFrameA: boolean);
+        getLinearPos(): number;
+        getAngularPos(): number;
         setLowerLinLimit(lowerLimit: number): void;
         setUpperLinLimit(upperLimit: number): void;
         setLowerAngLimit(lowerAngLimit: number): void;
         setUpperAngLimit(upperAngLimit: number): void;
+        setPoweredLinMotor(onOff: boolean): void;
+        setMaxLinMotorForce(maxLinMotorForce: number): void;
+        setTargetLinMotorVelocity(targetLinMotorVelocity: number): void;
     }
     class btFixedConstraint extends btTypedConstraint {
         constructor(rbA: btRigidBody, rbB: btRigidBody, frameInA: btTransform, frameInB: btTransform);
@@ -653,12 +798,11 @@ declare module Ammo {
         get_m_numIterations(): number;
         set_m_numIterations(m_numIterations: number): void;
     }
-    type btInternalTickCallback = (world: btDynamicsWorld, timeStep: number) => void;
     class btDynamicsWorld extends btCollisionWorld {
         addAction(action: btActionInterface): void;
         removeAction(action: btActionInterface): void;
         getSolverInfo(): btContactSolverInfo;
-        setInternalTickCallback(cb: btInternalTickCallback, worldUserInfo?: unknown, isPreTick?: boolean): void;
+        setInternalTickCallback(cb: unknown, worldUserInfo?: unknown, isPreTick?: boolean): void;
     }
     class btDiscreteDynamicsWorld extends btDynamicsWorld {
         constructor(dispatcher: btDispatcher, pairCache: btBroadphaseInterface, constraintSolver: btConstraintSolver, collisionConfiguration: btCollisionConfiguration);
@@ -1040,6 +1184,8 @@ declare module Ammo {
         generateClusters(k: number, maxiterations?: number): number;
         generateBendingConstraints(distance: number, mat: Material): number;
         upcast(colObj: btCollisionObject): btSoftBody;
+        getRestLengthScale(): number;
+        setRestLengthScale(restLength: number): void;
     }
     class btSoftBodyRigidBodyCollisionConfiguration extends btDefaultCollisionConfiguration {
         constructor(info?: btDefaultCollisionConstructionInfo);

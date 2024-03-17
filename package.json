@@ -5,12 +5,12 @@
   "main": "ammo/ammo.js",
   "types": "ammo/ammo.d.ts",
   "scripts": {
-    "download:idl": "curl -L https://raw.githubusercontent.com/kripken/ammo.js/master/ammo.idl -o ./ammo/ammo.idl",
-    "download:js": "curl -L https://github.com/kripken/ammo.js/raw/master/builds/ammo.js -o ./ammo/ammo.js",
+    "download:idl": "curl -L https://raw.githubusercontent.com/kripken/ammo.js/main/ammo.idl -o ./ammo/ammo.idl",
+    "download:js": "curl -L https://raw.githubusercontent.com/kripken/ammo.js/main/builds/ammo.js -o ./ammo/ammo.js",
     "download": "npm run download:idl && npm run download:js",
     "generate": "yarn generate:module && yarn generate:ambient",
-    "generate:module": "webidl2ts -i ./ammo/ammo.idl -o ./ammo/ammo.d.ts -ed -n Ammo",
-    "generate:ambient": "webidl2ts -i ./ammo/ammo.idl -o ./ammo/ambient/ammo.d.ts -e -n Ammo"
+    "generate:module": "webidl-dts-gen -i ./ammo/ammo.idl -o ./ammo/ammo.d.ts -ed -n Ammo",
+    "generate:ambient": "webidl-dts-gen -i ./ammo/ammo.idl -o ./ammo/ambient/ammo.d.ts -e -n Ammo"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,6 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "webidl2ts": "^1.0.0"
+    "webidl-dts-gen": "^1.8.0"
   }
 }

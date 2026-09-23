@@ -1,4 +1,3 @@
-export = Ammo;
 declare function Ammo<T>(target?: T): Promise<T & typeof Ammo>;
 declare module Ammo {
     function destroy(obj: any): void;

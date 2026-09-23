@@ -1,16 +1,27 @@
 {
   "name": "ammojs-typed",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Ammo.js with type definitions",
   "main": "ammo/ammo.js",
   "types": "ammo/ammo.d.ts",
+  "exports": {
+    ".": {
+      "types": "./ammo/ammo.d.ts",
+      "default": "./ammo/ammo.js"
+    },
+    "./wasm": {
+      "types": "./ammo/ammo.wasm.d.ts",
+      "default": "./ammo/ammo.wasm.js"
+    },
+    "./ammo.wasm.wasm": "./ammo/ammo.wasm.wasm",
+    "./ambient": {
+      "types": "./ammo/ambient.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "download:idl": "curl -L https://raw.githubusercontent.com/kripken/ammo.js/master/ammo.idl -o ./ammo/ammo.idl",
-    "download:js": "curl -L https://github.com/kripken/ammo.js/raw/master/builds/ammo.js -o ./ammo/ammo.js",
-    "download": "npm run download:idl && npm run download:js",
-    "generate": "yarn generate:module && yarn generate:ambient",
-    "generate:module": "webidl2ts -i ./ammo/ammo.idl -o ./ammo/ammo.d.ts -ed -n Ammo",
-    "generate:ambient": "webidl2ts -i ./ammo/ammo.idl -o ./ammo/ambient/ammo.d.ts -e -n Ammo"
+    "download": "node ./download.js",
+    "generate": "node ./generate.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +36,6 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "webidl2ts": "^1.0.0"
+    "webidl-dts-gen": "^1.12.0"
   }
 }

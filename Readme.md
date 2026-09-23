@@ -17,91 +17,118 @@ $ npm install github:giniedp/ammojs-typed
 ```
 
 # Usage
-## Ammo as window global
 
-Configure your `tsconfig.json` to lookup the ambient types
+## Ammo as ES module import
+
+Set this in `tsconfig.json`:
 
 ```json
-  "typeRoots": ["node_modules/ammojs-typed/ammo/ambient"]
+"esModuleInterop": true
 ```
 
-Then at some point require ammo.js (depends on your build chain)
+Import ammo:
 
 ```ts
-require('ammojs-typed')
+import Ammo from "ammojs-typed";
 ```
 
-or reference the script
+The default import is the init function. Call it before you use the API.
+
+**Option 1:** use the returned instance.
+
+```ts
+const api = await Ammo();
+const v = new api.btVector3(1, 2, 3);
+```
+
+**Option 2:** pass `Ammo` to init, which attaches the API to `Ammo` itself.
+
+```ts
+await Ammo(Ammo);
+const v = new Ammo.btVector3(1, 2, 3);
+```
+
+⚠️ `await Ammo()` does **not** attach the API to `Ammo`. The types can't catch this.
+
+```ts
+await Ammo(); // no initialize target
+new Ammo.btVector3(1, 2, 3); // runtime error
+```
+
+### Dynamic import
+
+```ts
+const { default: Ammo } = await import("ammojs-typed");
+await Ammo(Ammo);
+```
+
+### WebAssembly build
+
+```ts
+import Ammo from "ammojs-typed/wasm";
+```
+
+## Bundlers (Rollup, Vite)
+
+`ammo.js` is a CommonJS module. Rollup needs `@rollup/plugin-commonjs` to import it. Vite includes it by default.
+
+```js
+// rollup.config.js
+import commonjs from "@rollup/plugin-commonjs";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+
+export default {
+  // ...
+  plugins: [nodeResolve(), commonjs()],
+};
+```
+
+Bundled ES modules run in strict mode. There, a plain `Ammo()` call fails with:
+
+```
+TypeError: Cannot set properties of undefined (setting 'Ammo')
+```
+
+Call init with an explicit `this`:
+
+```ts
+const api = await Ammo.call({});
+// or attach the API to Ammo itself
+await Ammo.call({}, Ammo);
+```
+
+## Ammo as global (script tag)
+
+Use this when ammo is loaded with a `<script>` tag and not imported.
 
 ```html
-<script src="./ammo.js">
+<script src="ammo.js"></script>
 ```
 
-And use the global `Ammo` object
-
-```ts
-Ammo().then(() => {
-  new Ammo.btVector3(1, 2, 3)
-})
-```
-
-## Ammo as es6 module import
-
-You probably need to set the following `compilerOptions` in `tsconfig.json`
+Add the global types in `tsconfig.json`:
 
 ```json
-  "allowSyntheticDefaultImports": true,
-  "esModuleInterop": true
+"types": ["ammojs-typed/ambient"]
 ```
 
-Then import ammo like this
+or at the top of one `.ts` file:
 
 ```ts
-import Ammo from 'ammojs-typed'
+/// <reference types="ammojs-typed/ambient" />
 ```
 
-This works but be cautious here. The default import gives you the bootstrap function.
-After bootstrapping the api is not available through the `Ammo` symbol by default.
+`Ammo` is now available globally, with no import. Init works the same as with the ES module:
 
 ```ts
-Ammo().then(api => {
-  const v1 = new api.btVector3(1, 2, 3)
-  const v2 = new Ammo.btVector3(1, 2, 3) // <-- runtime error here
-})
+await Ammo(Ammo);
+const v = new Ammo.btVector3(1, 2, 3);
 ```
 
-You can work around that by booting like this
+or
 
 ```ts
-Ammo(Ammo).then(() => {
-  const v2 = new Ammo.btVector3(1, 2, 3) // <-- works
-})
-```
-
-## Ammo as dynamic import
-
-Enable same `compilerOptions` as above
-
-```ts
-import('./ammo.js')                        // use dynamic import
-  .then((Module) => Module.default())      // bootstrap ammo.js
-  .then((ammo) => {
-    const v1 = new ammo.btVector3(1, 2, 3) // use ammo here
-  })
-```
-
-Since typescript 3.8 you can use [type only imports](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-exports). So with dynamic imports you can safely import ammo.js types, without including them in you bundle like this
-
-```ts
-import type Ammo from './ammo.js'
-
-import('./ammo.js')                        // use dynamic import
-  .then((Module) => Module.default())      // bootstrap ammo.js
-  .then((ammo) => {
-    let v1: Ammo.btVector3 = null
-    // ...
-    v1 = v
-  })
+const api = await Ammo();
+const v = new api.btVector3(1, 2, 3);
 ```
 
 # Generate .d.ts files
